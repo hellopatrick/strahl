@@ -1,0 +1,9 @@
+(jbuild_version 1)
+
+(library
+  (
+    (name strahl)
+    (public_name strahl)
+    (libraries (core))
+  )
+)
