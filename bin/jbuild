@@ -4,6 +4,7 @@
   (
     (names (main))
     (libraries (core strahl))
+    (ocamlopt_flags (:standard -rectypes -inline 100 -ccopt -ffast-math -O3))
   )
 )
 
