@@ -33,10 +33,7 @@ let to_unit a = a / (length a)
 let reflect a n = a - (2.0 *. (dot a n) * n)
 
 let to_string {x; y; z} =
-    let x = Float.to_string x in
-    let y = Float.to_string y in
-    let z = Float.to_string z in
-    String.concat [x;",";y;",";z]
+    sprintf "(x = %0.2f; y = %0.2f; z = %0.2f)" x y z
 
 let random () =
     let open Float in
