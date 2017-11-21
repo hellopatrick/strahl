@@ -6,7 +6,7 @@ module Surface = Surface
 module Sphere = Sphere
 module Matte = Matte
 module Metal = Metal
-module Dieletric = Dieletric
+module Dielectric = Dielectric
 module Camera = Camera
 module Trace = Trace
 

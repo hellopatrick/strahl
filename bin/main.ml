@@ -11,14 +11,14 @@ let ground = Sphere.{center = Vec3.{x = 0.0; y = -100.5; z = -1.0}; radius = 100
 
 let red = Matte.{color = Vec3.{x = 1.0; y = 0.0; z = 0.0}}
 let green = Matte.{color = Vec3.{x = 0.1; y = 1.0; z = 0.1}}
-let glass = Dieletric.{ri =1.5}
+let glass = Dielectric.{ri =1.5}
 let mirror = Metal.{color = Vec3.{x = 1.0; y = 1.0; z = 1.0}; fuzz = 0.05}
 
 let world = [
     Surface.build (module Sphere) ball (module Matte) green;
     Surface.build (module Sphere) ground (module Matte) red;
-    Surface.build (module Sphere) left_ball (module Dieletric) glass;
-    Surface.build (module Sphere) inside_left_ball (module Dieletric) glass;
+    Surface.build (module Sphere) left_ball (module Dielectric) glass;
+    Surface.build (module Sphere) inside_left_ball (module Dielectric) glass;
     Surface.build (module Sphere) right_ball (module Metal) mirror;
 ]
 
