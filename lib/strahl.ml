@@ -33,4 +33,4 @@ let rec trace_ray_aux world ray = function
             Vec3.multiply trace.attenuation (trace_ray_aux world trace.reflection (n-1))
 
 let rec trace world ray =
-    trace_ray_aux world ray 50
+    trace_ray_aux world ray 16
