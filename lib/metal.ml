@@ -6,4 +6,4 @@ let scatter material (ray:Ray.t) (hit:Hit.t) =
     let shift = Vec3.(material.fuzz * random ()) in
     let scattered = Ray.{origin = hit.p; direction = Vec3.(reflect_dir + shift)} in
     if Vec3.dot reflect_dir hit.n <= 0.0 then None
-    else Some Trace.{hit = hit; attenuation = material.color; reflection = scattered;}
+    else Some Trace.{hit = hit; attenuation = material.color; reflection = scattered; kind = Trace.Bounce}

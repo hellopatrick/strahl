@@ -1,9 +1,12 @@
+type kind = Light | Bounce
+
 type t = {
     hit: Hit.t;
     attenuation: Vec3.t;
     reflection: Ray.t;
+    kind: kind
 }
 
-let compare h i =
+let compare a b =
     let open Hit in
-    compare h.hit i.hit
+    compare a.hit b.hit

@@ -4,23 +4,19 @@ module Vec3 = Vec3
 module Ray = Ray
 module Surface = Surface
 module Sphere = Sphere
+module Plane = Plane
 module Matte = Matte
 module Metal = Metal
 module Dielectric = Dielectric
 module Camera = Camera
 module Trace = Trace
+module Light = Light
 
-let blend' = Vec3.{x = 0.5; y = 0.7; z = 1.0}
-let blend = Vec3.{x = 1.0; y = 1.0; z = 1.0}
+let black = Vec3.{x = 0.01; y = 0.01; z = 0.01}
+let white = Vec3.{x = 1.0; y = 1.0; z = 1.0}
 
 let background_color ray =
-    let dir = Ray.unit_direction ray in
-    let t = 0.5 *. (dir.y +. 1.0) in
-    Vec3.((1.0 -. t) * blend + t * blend')
-
-let foreground_color Hit.{p; n; t} =
-    let ones = Vec3.{x = 1.0; y = 1.0; z = 1.0} in
-    Vec3.(0.5 * (ones + n))
+    black
 
 let rec trace_ray_aux world ray = function
     | 0 -> Vec3.origin
@@ -30,7 +26,9 @@ let rec trace_ray_aux world ray = function
         match best_trace with
         | None -> background_color ray
         | Some trace ->
-            Vec3.multiply trace.attenuation (trace_ray_aux world trace.reflection (n-1))
+            match trace with
+            | Trace.{ kind = Light; _} -> trace.attenuation
+            | Trace.{ kind = Bounce; _ } -> Vec3.multiply trace.attenuation (trace_ray_aux world trace.reflection (n-1))
 
 let rec trace world ray =
     trace_ray_aux world ray 16

@@ -34,4 +34,4 @@ let trace ray (module Surface : Surface) =
     let hit = Surface.Shape.hit Surface.this ray in
     match hit with
     | None -> None
-    | Some hit -> (Surface.Material.scatter Surface.appearance ray hit)
+    | Some hit -> Surface.Material.scatter Surface.appearance ray hit

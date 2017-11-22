@@ -3,25 +3,36 @@ open Strahl
 
 module Out = Out_channel
 
-let ball = Sphere.{center = Vec3.{x = 0.0; y = 0.0; z = -1.0}; radius = 0.5}
-let left_ball = Sphere.{center = Vec3.{x = -1.0; y = 0.0; z = -1.0}; radius = 0.5}
-let back_left_ball = Sphere.{center = Vec3.{x = -1.0; y = 0.0; z = -2.0}; radius = 0.5}
-let inside_left_ball = Sphere.{center = Vec3.{x = -1.0; y = 0.0; z = -1.0}; radius = -0.45}
-let right_ball = Sphere.{center = Vec3.{x = 1.0; y = 0.0; z = -1.0}; radius = 0.5}
-let ground = Sphere.{center = Vec3.{x = 0.0; y = -200.5; z = -1.0}; radius = 200.0}
+let ball = Sphere.{center = Vec3.{x = 0.0; y = 0.5; z = -0.0}; radius = 0.5}
+let another_ball = Sphere.{center = Vec3.{x = 0.2; y = 0.75; z = -2.0}; radius = 0.75}
+let yet_another_ball = Sphere.{center = Vec3.{x = 0.75; y = 0.25; z = -0.0}; radius = 0.25}
+let left_ball = Sphere.{center = Vec3.{x = -1.5; y = 0.5; z = -1.0}; radius = 0.5}
+let inside_left_ball = Sphere.{center = Vec3.{x = -1.5; y = 0.5; z = -1.0}; radius = -0.48}
+let back_left_ball = Sphere.{center = Vec3.{x = -2.0; y = 1.0; z = -2.5}; radius = 1.0}
+let right_ball = Sphere.{center = Vec3.{x = 1.25; y = 0.5; z = -1.0}; radius = 0.5}
+let ground = Plane.{normal = Vec3.{x = 0.0; y = 1.0; z = 0.0}; origin = Vec3.{x = 0.0; y = 0.0; z = 0.0}}
+let more_ball = Sphere.{center = Vec3.{x = 1.35; y = 0.35; z = -0.0}; radius = 0.35}
+let lamp = Sphere.{center = Vec3.{x = -2.0; y = 0.5; z = -0.0}; radius = 0.5}
 
-let black = Matte.{color = Vec3.{x = 0.2; y = 0.2; z = 0.2}}
-let green = Matte.{color = Vec3.{x = 0.3; y = 0.9; z = 0.4}}
+let dark = Matte.{color = Vec3.{x = 0.5; y = 0.5; z = 0.5}}
+let light = Matte.{color = Vec3.{x = 0.9; y = 0.9; z = 0.9}}
+let green = Matte.{color = Vec3.{x = 0.5; y = 0.9; z = 0.3}}
+let red = Matte.{color = Vec3.{x = 1.000; y = 0.078; z = 0.576}}
 let diamond = Dielectric.{ri = 2.4}
-let mirror = Metal.{color = Vec3.{x = 1.0; y = 0.8; z = 1.0}; fuzz = 0.01}
+let mirror = Metal.{color = Vec3.{x = 0.902; y = 0.902; z = 0.980}; fuzz = 0.05}
+let source = Light.{color = Vec3.{x = 1.0; y = 0.0; z = 0.0}}
 
 let world = [
     Surface.build (module Sphere) ball (module Matte) green;
-    Surface.build (module Sphere) ground (module Matte) black;
+    Surface.build (module Sphere) another_ball (module Matte) light;
+    Surface.build (module Sphere) yet_another_ball (module Matte) red;
+    Surface.build (module Plane) ground (module Matte) light;
     Surface.build (module Sphere) left_ball (module Dielectric) diamond;
     Surface.build (module Sphere) inside_left_ball (module Dielectric) diamond;
     Surface.build (module Sphere) right_ball (module Metal) mirror;
     Surface.build (module Sphere) back_left_ball (module Metal) mirror;
+    Surface.build (module Sphere) more_ball (module Dielectric) diamond;
+    Surface.build (module Sphere) lamp (module Light) source;
 ]
 
 let print_color file Vec3.{x; y ; z} =
@@ -39,10 +50,12 @@ let output ~path ~image (width, height) =
     )
 
 let random_ray camera x y w h =
-    let x, y, w, h = Float.(of_int x, of_int y, of_int w, of_int h) in
-    let x' = x +. Random.float 1.0 in
-    let y' = y +. Random.float 1.0 in
-    Camera.get_ray camera (x' /. w) (y' /. h)
+    let open Float in
+    let x = (Random.float 1.0) + of_int x
+    and y = (Random.float 1.0) + of_int y
+    and w = of_int w
+    and h = of_int h in
+    Camera.get_ray camera (x / w) (y / h)
 
 let trace camera n x y w h =
     let rec aux n acc =
@@ -57,22 +70,22 @@ let trace camera n x y w h =
     Vec3.(sum / (Float.of_int n))
 
 let camera =
-    let from = Vec3.{x = -2.0; y = 1.5; z = 1.0}
+    let from = Vec3.{x = -2.0; y = 2.0; z = 3.0}
     and at = Vec3.{x = 0.0; y = 0.0; z = -1.0}
-    and up = Vec3.{x = 0.0; y = 1.0; z = 0.0} in
-    let fov = 35.0
-    and aspect_ratio = 2.0
-    and aperture = 0.05 in
+    and up = Vec3.{x = 0.0; y = 1.0; z = 0.0}
+    and fov = 45.0
+    and aspect_ratio = 1.7777
+    and aperture = 0.01 in
     let focus_dist = Vec3.(length (from - at)) in
     Camera.create from at up fov aspect_ratio aperture focus_dist
 
 let () =
-    let w, h = 1000, 500 in
+    let w, h = 640, 360 in
     print_endline "tracing...";
     let image = Array.init h ~f:(fun y ->
         let y = h - y in
         Array.init w ~f:(fun x ->
-            trace camera 50 x y w h
+            trace camera 600 x y w h
         )
     ) in
     print_endline "saving...";

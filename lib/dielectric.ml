@@ -32,4 +32,4 @@ let scatter material (ray:Ray.t) (hit:Hit.t) =
             match (Random.float 1.0) < prob with
             | true -> reflection
             | false -> v in
-    Some Trace.{hit; attenuation; reflection = Ray.{origin = hit.p; direction};}
+    Some Trace.{hit; attenuation; reflection = Ray.{origin = hit.p; direction}; kind = Trace.Bounce }
